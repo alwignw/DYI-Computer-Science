@@ -1,0 +1,1 @@
+https://github.com/ossu/computer-science?tab=readme-ov-file#intro-cs
