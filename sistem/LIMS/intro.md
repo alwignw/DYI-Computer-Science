@@ -1,0 +1,1 @@
+LIMS (Laboratory Information Management System) adalah perangkat lunak berbasis digital yang dirancang untuk mengelola, mengotomatisasi, dan mengoptimalkan seluruh alur kerja laboratorium, mulai dari penerimaan sampel, analisis, penyimpanan data, hingga pembuatan laporan hasil uji secara efisien dan akurat.
