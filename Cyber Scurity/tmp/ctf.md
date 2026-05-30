@@ -1,0 +1,1 @@
+CTF (singkatan dari Capture The Flag) adalah kompetisi keamanan siber (cybersecurity) yang menantang peserta untuk menemukan celah keamanan atau memecahkan teka-teki logika guna mendapatkan "bendera" (flag). Flag tersebut biasanya berupa teks atau kode unik (contoh: FLAG{ini_contoh_bendera}) yang tersembunyi di dalam sistem komputer, aplikasi, atau jaringan.

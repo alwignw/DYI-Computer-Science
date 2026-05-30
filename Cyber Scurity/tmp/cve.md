@@ -1,0 +1,1 @@
+CVE adalah singkatan dari Common Vulnerabilities and Exposures. Sistem ini berfungsi sebagai "kartu identitas" atau katalog standar publik yang mengidentifikasi kerentanan keamanan pada perangkat lunak (software) atau perangkat keras (hardware).

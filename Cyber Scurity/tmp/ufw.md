@@ -1,0 +1,1 @@
+UFW (Uncomplicated Firewall) adalah program antarmuka (front-end) yang dirancang untuk menyederhanakan pengelolaan sistem keamanan jaringan pada komputer atau server Linux. Program ini menyembunyikan kerumitan perintah dasar iptables yang rumit sehingga lebih mudah digunakan oleh pemula maupun profesional.

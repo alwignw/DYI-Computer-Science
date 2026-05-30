@@ -1,0 +1,1 @@
+WAF (Web Application Firewall) adalah sistem keamanan berbasis aplikasi yang berfungsi untuk melindungi website atau aplikasi web dari serangan siber. WAF bekerja dengan cara menyaring, memantau, dan memblokir lalu lintas data berbahaya (HTTP/HTTPS) sebelum mencapai server web Anda
