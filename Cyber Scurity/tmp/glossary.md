@@ -10,3 +10,11 @@ https://csrc.nist.gov/glossary?page=1
 **RSA** (Rivest–Shamir–Adleman) adalah salah satu algoritma kriptografi asimetris (kunci publik) yang digunakan untuk mengamankan data. Algoritma ini menggunakan dua kunci yang berbeda namun saling terhubung secara matematis: kunci publik untuk mengenkripsi data dan kunci privat untuk mendekripsinya
 
 **NFS** (Network File System) adalah protokol jaringan yang memungkinkan pengguna atau perangkat untuk mengakses dan mengelola berkas melalui jaringan komputer semudah mengakses penyimpanan lokal. Sistem ini menggunakan arsitektur klien-server, di mana komputer klien dapat membuka atau mengedit berkas di server jarak jauh seolah-olah berkas tersebut berada di komputernya sendiri.
+
+**SSID** (Service Set Identifier) adalah nama yang diberikan pada sebuah jaringan Wi-Fi. Sederhananya, SSID adalah nama jaringan nirkabel yang muncul di layar ponsel atau laptop Anda ketika Anda mencari sinyal Wi-Fi yang tersedia di suatu area.
+
+
+**Ping Flood Attacks** ?
+
+
+script kiddie adalah sebutan peyoratif bagi peretas amatir yang melakukan serangan siber menggunakan script atau tools (perangkat lunak) buatan orang lain
