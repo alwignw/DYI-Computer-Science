@@ -1,0 +1,1 @@
+Tree-shaking = teknik optimasi dalam pemrograman (terutama JavaScript) untuk menghapus kode yang tidak terpakai (dead code) dari bundle aplikasi saat proses build. Istilah ini menganalogikan kode sebagai pohon dan daun mati yang gugur saat pohon digoyang.
