@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TanStack Vue Query — Cheatsheet</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg:        #080C14;
+    --surface:   #0F1623;
+    --surface2:  #161E2E;
+    --border:    #1E2A3F;
+    --border2:   #253348;
+
+    --query:     #38BDF8;   /* sky — useQuery */
+    --mutation:  #FB923C;   /* orange — useMutation */
+    --cache:     #A78BFA;   /* violet — cache/client */
+    --success:   #34D399;   /* emerald — success */
+    --error:     #F87171;   /* red — error */
+    --warn:      #FBBF24;   /* amber — warning/time */
+    --neutral:   #94A3B8;   /* slate — neutral text */
+    --text:      #E2E8F0;
+    --dim:       #64748B;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, #0F1623 0%, #0A1628 50%, #0D1420 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 32px 24px;
+    display: flex;
+    align-items: flex-end;
+    gap: 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .logo {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--query), var(--cache));
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: 14px;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .header h1 {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    color: #fff;
+  }
+  .header h1 span { color: var(--query); }
+  .header-sub {
+    font-size: 11px;
+    color: var(--dim);
+    margin-top: 2px;
+  }
+  .pill-row {
+    display: flex;
+    gap: 6px;
+    margin-left: auto;
+    flex-wrap: wrap;
+  }
+  .pill {
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.3px;
+  }
+  .pill-q  { background: rgba(56,189,248,.15); color: var(--query);    border: 1px solid rgba(56,189,248,.25); }
+  .pill-m  { background: rgba(251,146,60,.15);  color: var(--mutation); border: 1px solid rgba(251,146,60,.25); }
+  .pill-c  { background: rgba(167,139,250,.15); color: var(--cache);   border: 1px solid rgba(167,139,250,.25); }
+  .pill-s  { background: rgba(52,211,153,.15);  color: var(--success); border: 1px solid rgba(52,211,153,.25); }
+
+  /* ── LAYOUT ── */
+  .page { padding: 20px 24px; max-width: 1600px; margin: 0 auto; }
+
+  .nav-pills {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    padding: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .nav-pill {
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--dim);
+    transition: all .15s;
+    border: 1px solid transparent;
+  }
+  .nav-pill:hover { color: var(--text); background: var(--surface2); border-color: var(--border2); }
+
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 14px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 14px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 14px; }
+  .col-span-2 { grid-column: span 2; }
+  .col-span-3 { grid-column: span 3; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-icon {
+    font-size: 14px;
+    line-height: 1;
+  }
+  .card-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.1px;
+  }
+  .card-badge {
+    margin-left: auto;
+    font-size: 9px;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+  }
+  .badge-q  { background: rgba(56,189,248,.15); color: var(--query); }
+  .badge-m  { background: rgba(251,146,60,.15);  color: var(--mutation); }
+  .badge-c  { background: rgba(167,139,250,.15); color: var(--cache); }
+  .badge-s  { background: rgba(52,211,153,.15);  color: var(--success); }
+  .badge-w  { background: rgba(251,191,36,.15);  color: var(--warn); }
+
+  /* ── CODE ── */
+  pre, code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+  pre {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 10px 12px;
+    overflow-x: auto;
+    line-height: 1.65;
+    flex-shrink: 0;
+  }
+  .kw  { color: #C792EA; }  /* keyword */
+  .fn  { color: var(--query); }  /* function */
+  .str { color: var(--success); }  /* string */
+  .cmt { color: var(--dim); font-style: italic; }  /* comment */
+  .num { color: var(--warn); }  /* number */
+  .prop{ color: #F8C555; }  /* property */
+  .op  { color: var(--neutral); }  /* operator */
+  .tag { color: var(--mutation); }  /* tag/special */
+  .mut { color: var(--mutation); }  /* mutation color */
+  .cac { color: var(--cache); }  /* cache color */
+
+  /* ── TABLE ── */
+  table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  th {
+    text-align: left;
+    padding: 6px 8px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--dim);
+    border-bottom: 1px solid var(--border2);
+  }
+  td {
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    color: var(--neutral);
+  }
+  td:first-child { color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 10.5px; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,.02); }
+
+  /* ── FLOW ── */
+  .flow {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 10px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--neutral);
+    line-height: 1.8;
+  }
+  .flow .hi-q { color: var(--query); font-weight: 600; }
+  .flow .hi-m { color: var(--mutation); font-weight: 600; }
+  .flow .hi-c { color: var(--cache); font-weight: 600; }
+  .flow .hi-s { color: var(--success); font-weight: 600; }
+  .flow .hi-e { color: var(--error); font-weight: 600; }
+  .flow .hi-w { color: var(--warn); font-weight: 600; }
+  .flow .arrow { color: var(--dim); }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--dim);
+    margin-bottom: 10px;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── LIST ── */
+  .item-list { display: flex; flex-direction: column; gap: 5px; }
+  .item {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    font-size: 11.5px;
+    color: var(--neutral);
+    padding: 5px 8px;
+    background: var(--surface2);
+    border-radius: 5px;
+    border: 1px solid var(--border);
+  }
+  .item-key {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--text);
+    min-width: 120px;
+    flex-shrink: 0;
+  }
+  .item-dot { color: var(--dim); margin-top: 1px; flex-shrink: 0; }
+
+  /* ── COMPARE ── */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .compare-col {
+    background: var(--surface2);
+    border-radius: 7px;
+    padding: 10px;
+    border: 1px solid var(--border);
+  }
+  .compare-title {
+    font-size: 10px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  /* ── LIFECYCLE ── */
+  .lifecycle {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 10px 0;
+  }
+  .lc-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 80px;
+  }
+  .lc-box {
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    white-space: nowrap;
+  }
+  .lc-label { font-size: 9px; color: var(--dim); text-align: center; }
+  .lc-arrow {
+    color: var(--dim);
+    font-size: 14px;
+    padding: 0 2px;
+    margin-top: -16px;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    padding: 24px;
+    color: var(--dim);
+    font-size: 11px;
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  @media (max-width: 900px) {
+    .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .grid-2 { grid-template-columns: 1fr; }
+    .col-span-2, .col-span-3 { grid-column: span 1; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-title">
+    <div class="logo">VQ</div>
+    <div>
+      <h1>TanStack <span>Vue Query</span> — Cheatsheet</h1>
+      <div class="header-sub">Server State Management · v5 · Semua konsep dalam satu halaman</div>
+    </div>
+  </div>
+  <div class="pill-row">
+    <span class="pill pill-q">useQuery</span>
+    <span class="pill pill-m">useMutation</span>
+    <span class="pill pill-c">QueryClient</span>
+    <span class="pill pill-s">Production</span>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- NAV -->
+  <div class="nav-pills">
+    <a class="nav-pill" href="#foundations">Foundations</a>
+    <a class="nav-pill" href="#usequery">useQuery</a>
+    <a class="nav-pill" href="#cache">Cache & Timing</a>
+    <a class="nav-pill" href="#mutation">useMutation</a>
+    <a class="nav-pill" href="#client">QueryClient</a>
+    <a class="nav-pill" href="#patterns">Patterns</a>
+    <a class="nav-pill" href="#optimistic">Optimistic</a>
+    <a class="nav-pill" href="#advanced">Advanced</a>
+    <a class="nav-pill" href="#production">Production</a>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 1 — FOUNDATIONS
+  ═══════════════════════════════════════════════ -->
+  <div class="section-label" id="foundations">📐 Foundations</div>
+  <div class="grid-3" style="margin-bottom:14px">
+
+    <!-- Server State vs Client State -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🌐</span>
+        <span class="card-title">Server State vs Client State</span>
+      </div>
+      <div class="compare">
+        <div class="compare-col">
+          <div class="compare-title" style="color:var(--query)">🖥️ Server State</div>
+          <div class="item-list">
+            <div class="item"><span class="item-dot">•</span>Dari API / Database</div>
+            <div class="item"><span class="item-dot">•</span>Bisa berubah kapan saja</div>
+            <div class="item"><span class="item-dot">•</span>Perlu di-fetch, cache, sync</div>
+            <div class="item"><span class="item-dot">•</span>Asinkron</div>
+          </div>
+        </div>
+        <div class="compare-col">
+          <div class="compare-title" style="color:var(--cache)">💻 Client State</div>
+          <div class="item-list">
+            <div class="item"><span class="item-dot">•</span>Modal, tab, form</div>
+            <div class="item"><span class="item-dot">•</span>Kamu yang kontrol</div>
+            <div class="item"><span class="item-dot">•</span>Hidup di memori browser</div>
+            <div class="item"><span class="item-dot">•</span>Sinkron</div>
+          </div>
+        </div>
+      </div>
+      <div class="flow" style="font-size:10.5px">
+        <span class="hi-q">TanStack Query</span> <span class="arrow">→</span> khusus untuk <span class="hi-c">Server State</span><br>
+        <span class="hi-c">Pinia / Vuex</span> <span class="arrow">→</span> tetap untuk <span class="hi-c">Client State</span>
+      </div>
+    </div>
+
+    <!-- Why it exists -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">💡</span>
+        <span class="card-title">Mengapa Dibuat?</span>
+      </div>
+      <div class="item-list">
+        <div class="item"><span class="item-dot" style="color:var(--error)">✗</span>Fetch manual berulang di setiap komponen</div>
+        <div class="item"><span class="item-dot" style="color:var(--error)">✗</span>Tidak ada caching — data dibuang saat unmount</div>
+        <div class="item"><span class="item-dot" style="color:var(--error)">✗</span>Race condition tidak tertangani</div>
+        <div class="item"><span class="item-dot" style="color:var(--error)">✗</span>100 komponen sama = 100 network request</div>
+        <div class="item"><span class="item-dot" style="color:var(--error)">✗</span>Data stale saat user kembali ke tab</div>
+        <div class="item"><span class="item-dot" style="color:var(--error)">✗</span>Boilerplate loading/error di Vuex membengkak</div>
+      </div>
+      <div class="flow">
+        <span class="hi-s">✓</span> Otomatis: cache · dedup · sync · retry · loading state
+      </div>
+    </div>
+
+    <!-- Setup -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">⚙️</span>
+        <span class="card-title">Setup</span>
+        <span class="card-badge badge-q">main.js</span>
+      </div>
+      <pre><span class="kw">import</span> { <span class="fn">createApp</span> } <span class="kw">from</span> <span class="str">'vue'</span>
+<span class="kw">import</span> { <span class="fn">VueQueryPlugin</span>, <span class="fn">QueryClient</span> }
+  <span class="kw">from</span> <span class="str">'@tanstack/vue-query'</span>
+
+<span class="kw">const</span> queryClient = <span class="kw">new</span> <span class="fn">QueryClient</span>({
+  defaultOptions: {
+    queries: {
+      <span class="prop">staleTime</span>: <span class="num">1000</span> * <span class="num">60</span>,    <span class="cmt">// 1 menit</span>
+      <span class="prop">gcTime</span>:    <span class="num">1000</span> * <span class="num">60</span> * <span class="num">5</span>, <span class="cmt">// 5 menit</span>
+      <span class="prop">retry</span>:     <span class="num">2</span>,
+      <span class="prop">refetchOnWindowFocus</span>: <span class="kw">true</span>,
+    },
+  },
+})
+
+<span class="fn">createApp</span>(App)
+  .<span class="fn">use</span>(VueQueryPlugin, { queryClient })
+  .<span class="fn">mount</span>(<span class="str">'#app'</span>)</pre>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 2 — useQuery
+  ═══════════════════════════════════════════════ -->
+  <div class="section-label" id="usequery">🔍 useQuery</div>
+  <div class="grid-3" style="margin-bottom:14px">
+
+    <div class="card col-span-2">
+      <div class="card-header">
+        <span class="card-icon">🔍</span>
+        <span class="card-title">useQuery — Anatomy</span>
+        <span class="card-badge badge-q">READ</span>
+      </div>
+      <pre><span class="kw">const</span> {
+  <span class="prop">data</span>,           <span class="cmt">// ← hasil queryFn (ref)</span>
+  <span class="prop">isPending</span>,      <span class="cmt">// ← true saat PERTAMA fetch (belum ada data)</span>
+  <span class="prop">isFetching</span>,     <span class="cmt">// ← true SETIAP kali fetch (termasuk refetch)</span>
+  <span class="prop">isError</span>,        <span class="cmt">// ← true kalau gagal</span>
+  <span class="prop">isSuccess</span>,      <span class="cmt">// ← true kalau berhasil</span>
+  <span class="prop">error</span>,          <span class="cmt">// ← objek error</span>
+  <span class="prop">refetch</span>,        <span class="cmt">// ← trigger fetch manual</span>
+  <span class="prop">isPlaceholderData</span> <span class="cmt">// ← true saat pakai placeholderData</span>
+} = <span class="fn">useQuery</span>({
+  <span class="prop">queryKey</span>:  [<span class="str">'users'</span>, userId],  <span class="cmt">// ← identitas unik di cache</span>
+  <span class="prop">queryFn</span>:   () => <span class="fn">fetchUser</span>(userId.<span class="prop">value</span>), <span class="cmt">// ← harus return Promise</span>
+  <span class="prop">enabled</span>:   <span class="fn">computed</span>(() => !!userId.<span class="prop">value</span>), <span class="cmt">// ← kondisi aktif</span>
+  <span class="prop">staleTime</span>: <span class="num">1000</span> * <span class="num">60</span> * <span class="num">5</span>,
+  <span class="prop">gcTime</span>:    <span class="num">1000</span> * <span class="num">60</span> * <span class="num">10</span>,
+  <span class="prop">placeholderData</span>: (prev) => prev,  <span class="cmt">// ← data sementara</span>
+  <span class="prop">initialData</span>: cachedUser,          <span class="cmt">// ← data awal ke cache</span>
+})</pre>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">⚡</span>
+        <span class="card-title">isPending vs isFetching</span>
+      </div>
+      <table>
+        <tr><th></th><th>isPending</th><th>isFetching</th></tr>
+        <tr><td>Pertama kali</td><td style="color:var(--success)">✓ true</td><td style="color:var(--success)">✓ true</td></tr>
+        <tr><td>Background refetch</td><td style="color:var(--error)">✗ false</td><td style="color:var(--success)">✓ true</td></tr>
+        <tr><td>Ada data di cache?</td><td style="color:var(--error)">Tidak</td><td style="color:var(--success)">Bisa ya</td></tr>
+        <tr><td>Gunakan untuk</td><td>Skeleton penuh</td><td>Spinner kecil</td></tr>
+      </table>
+      <pre><span class="cmt">// Template pattern</span>
+<span class="kw">&lt;div</span> <span class="prop">v-if</span>=<span class="str">"isPending"</span><span class="kw">&gt;</span><span class="tag">&lt;Skeleton/&gt;</span><span class="kw">&lt;/div&gt;</span>
+<span class="kw">&lt;div</span> <span class="prop">v-else</span><span class="kw">&gt;</span>
+  <span class="kw">&lt;span</span> <span class="prop">v-if</span>=<span class="str">"isFetching"</span><span class="kw">&gt;</span>🔄<span class="kw">&lt;/span&gt;</span>
+  <span class="tag">&lt;UserList</span> <span class="prop">:users</span>=<span class="str">"data"</span><span class="tag">/&gt;</span>
+<span class="kw">&lt;/div&gt;</span></pre>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 3 — CACHE & TIMING
+  ═══════════════════════════════════════════════ -->
+  <div class="section-label" id="cache">⏱️ Cache & Timing</div>
+  <div class="grid-3" style="margin-bottom:14px">
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">⏱️</span>
+        <span class="card-title">staleTime</span>
+        <span class="card-badge badge-w">TIMING</span>
+      </div>
+      <div class="flow">
+        Berapa lama data dianggap <span class="hi-s">FRESH</span><br>
+        sebelum dianggap <span class="hi-e">STALE</span>
+      </div>
+      <table>
+        <tr><th>Nilai</th><th>Arti</th></tr>
+        <tr><td>0 (default)</td><td>Langsung stale setelah fetch</td></tr>
+        <tr><td>1000 * 60 * 5</td><td>Fresh selama 5 menit</td></tr>
+        <tr><td>Infinity</td><td>Tidak pernah stale</td></tr>
+      </table>
+      <div class="flow" style="font-size:10px">
+        <span class="hi-s">FRESH</span> <span class="arrow">→</span> tidak refetch meski komponen mount ulang<br>
+        <span class="hi-e">STALE</span> <span class="arrow">→</span> refetch di background pada trigger berikutnya
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🗑️</span>
+        <span class="card-title">gcTime</span>
+        <span class="card-badge badge-w">TIMING</span>
+      </div>
+      <div class="flow">
+        Berapa lama data tetap di <span class="hi-c">cache</span><br>
+        setelah tidak ada subscriber (unmount)
+      </div>
+      <div class="flow" style="font-size:10px;margin-top:4px">
+        <span class="hi-q">staleTime</span> <span class="arrow">→</span> kapan perlu di-<span class="hi-q">REFETCH</span><br>
+        <span class="hi-c">gcTime</span>    <span class="arrow">→</span> kapan data di-<span class="hi-e">HAPUS</span> dari cache<br><br>
+        ⚠️  gcTime harus <span class="hi-w">≥ staleTime</span>
+      </div>
+      <div class="flow" style="font-size:10px;margin-top:4px">
+        unmount <span class="arrow">→</span> gcTime countdown<br>
+        mount lagi (sebelum habis) <span class="arrow">→</span> data masih ada ✅<br>
+        gcTime habis <span class="arrow">→</span> cache dihapus 🗑️
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">📊</span>
+        <span class="card-title">Query Lifecycle</span>
+      </div>
+      <div class="flow" style="font-size:10px;line-height:2">
+        <span class="hi-q">queryFn()</span> selesai<br>
+        <span class="arrow">  ↓</span><br>
+        <span class="hi-s">[FRESH]</span>   data segar, tidak refetch<br>
+        <span class="arrow">  ↓</span> staleTime berlalu<br>
+        <span class="hi-w">[STALE]</span>   basi, refetch pada trigger<br>
+        <span class="arrow">  ↓</span> komponen unmount<br>
+        <span class="hi-c">[INACTIVE]</span> gcTime countdown<br>
+        <span class="arrow">  ↓</span> gcTime habis<br>
+        <span class="hi-e">[DELETED]</span> dihapus dari cache 🗑️
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 4 — useMutation
+  ═══════════════════════════════════════════════ -->
+  <div class="section-label" id="mutation">✏️ useMutation</div>
+  <div class="grid-3" style="margin-bottom:14px">
+
+    <div class="card col-span-2">
+      <div class="card-header">
+        <span class="card-icon">✏️</span>
+        <span class="card-title">useMutation — Anatomy</span>
+        <span class="card-badge badge-m">WRITE</span>
+      </div>
+      <pre><span class="kw">const</span> { <span class="prop">mutate</span>, <span class="prop">mutateAsync</span>, <span class="prop">isPending</span>, <span class="prop">isError</span>, <span class="prop">data</span>, <span class="prop">reset</span> }
+  = <span class="fn">useMutation</span>({
+    <span class="prop">mutationFn</span>: (payload) => <span class="fn">api.post</span>(<span class="str">'/users'</span>, payload),
+
+    <span class="prop">onMutate</span>: <span class="kw">async</span> (variables) => {
+      <span class="cmt">// ← SEBELUM fetch. Ideal untuk optimistic update</span>
+      <span class="kw">await</span> queryClient.<span class="fn">cancelQueries</span>({ <span class="prop">queryKey</span>: [<span class="str">'users'</span>] })
+      <span class="kw">const</span> prev = queryClient.<span class="fn">getQueryData</span>([<span class="str">'users'</span>])
+      queryClient.<span class="fn">setQueryData</span>([<span class="str">'users'</span>], old => [...old, variables])
+      <span class="kw">return</span> { prev } <span class="cmt">// ← context untuk rollback</span>
+    },
+    <span class="prop">onSuccess</span>: (data, variables, context) => {
+      <span class="cmt">// ← kalau berhasil. Invalidate / redirect di sini</span>
+      queryClient.<span class="fn">invalidateQueries</span>({ <span class="prop">queryKey</span>: [<span class="str">'users'</span>] })
+    },
+    <span class="prop">onError</span>:   (error, variables, context) => {
+      <span class="cmt">// ← kalau gagal. Rollback di sini</span>
+      queryClient.<span class="fn">setQueryData</span>([<span class="str">'users'</span>], context.prev)
+    },
+    <span class="prop">onSettled</span>: (data, error, variables, context) => {
+      <span class="cmt">// ← SELALU jalan (seperti finally). Cleanup di sini</span>
+    },
+  })
+
+<span class="fn">mutate</span>(payload)                         <span class="cmt">// fire & forget</span>
+<span class="kw">const</span> result = <span class="kw">await</span> <span class="fn">mutateAsync</span>(payload) <span class="cmt">// async/await</span>
+
+<span class="cmt">// Callback juga bisa di level mutate() (per-call)</span>
+<span class="fn">mutate</span>(payload, { <span class="prop">onSuccess</span>: () => <span class="fn">toast</span>(<span class="str">'Berhasil!'</span>) })</pre>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🔄</span>
+        <span class="card-title">Mutation Lifecycle</span>
+      </div>
+      <div class="flow" style="font-size:10px;line-height:2.2">
+        <span class="hi-c">[idle]</span>   belum dipanggil<br>
+        <span class="arrow">  ↓</span> mutate()<br>
+        <span class="hi-w">[pending]</span> sedang fetch<br>
+        <span class="arrow">  ├──</span> ✅ <span class="hi-s">onSuccess</span><br>
+        <span class="arrow">  └──</span> ❌ <span class="hi-e">onError</span><br>
+        <span class="arrow">       ↓</span><br>
+        <span class="hi-q">onSettled</span>  (selalu)<br>
+      </div>
+      <table style="margin-top:8px">
+        <tr><th>Callback</th><th>Kapan</th></tr>
+        <tr><td>onMutate</td><td>Sebelum fetch</td></tr>
+        <tr><td>onSuccess</td><td>Fetch berhasil</td></tr>
+        <tr><td>onError</td><td>Fetch gagal</td></tr>
+        <tr><td>onSettled</td><td>Selalu (finally)</td></tr>
+      </table>
+      <div class="flow" style="font-size:10px;margin-top:8px">
+        <span class="hi-q">useMutation level</span> <span class="arrow">→</span> logic global<br>
+        <span class="hi-m">mutate() level</span>    <span class="arrow">→</span> UI lokal / toast
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 5 — QUERY CLIENT
+  ═══════════════════════════════════════════════ -->
+  <div class="section-label" id="client">🗄️ QueryClient Methods</div>
+  <div class="grid-4" style="margin-bottom:14px">
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🔄</span>
+        <span class="card-title">invalidateQueries</span>
+        <span class="card-badge badge-c">CLIENT</span>
+      </div>
+      <div class="flow" style="font-size:10px">
+        Tandai stale <span class="arrow">→</span> trigger refetch<br>
+        Data lama tetap tampil sementara
+      </div>
+      <pre style="font-size:10px"><span class="cmt">// Semua yg dimulai ['users']</span>
+queryClient.<span class="fn">invalidateQueries</span>({
+  <span class="prop">queryKey</span>: [<span class="str">'users'</span>]
+})
+<span class="cmt">// Exact match saja</span>
+queryClient.<span class="fn">invalidateQueries</span>({
+  <span class="prop">queryKey</span>: [<span class="str">'users'</span>, <span class="num">1</span>],
+  <span class="prop">exact</span>: <span class="kw">true</span>
+})</pre>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">📝</span>
+        <span class="card-title">setQueryData</span>
+        <span class="card-badge badge-c">CLIENT</span>
+      </div>
+      <div class="flow" style="font-size:10px">
+        Update cache <span class="hi-s">langsung</span> — tanpa fetch<br>
+        Cocok kalau server sudah return data baru
+      </div>
+      <pre style="font-size:10px"><span class="cmt">// Set langsung</span>
+queryClient.<span class="fn">setQueryData</span>([<span class="str">'users'</span>], newData)
+
+<span class="cmt">// Update berdasarkan data lama</span>
+queryClient.<span class="fn">setQueryData</span>([<span class="str">'users'</span>],
+  old => [...old, newUser]
+)
+<span class="cmt">// Update satu item di list</span>
+queryClient.<span class="fn">setQueryData</span>([<span class="str">'users'</span>],
+  old => old.<span class="fn">map</span>(u =>
+    u.id === updated.id ? updated : u
+  )
+)</pre>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">📖</span>
+        <span class="card-title">getQueryData</span>
+        <span class="card-badge badge-c">CLIENT</span>
+      </div>
+      <div class="flow" style="font-size:10px">
+        Baca cache <span class="hi-q">sinkron</span> — tidak fetch<br>
+        undefined kalau belum ada di cache
+      </div>
+      <pre style="font-size:10px"><span class="kw">const</span> users = queryClient
+  .<span class="fn">getQueryData</span>([<span class="str">'users'</span>])
+
+<span class="kw">const</span> state = queryClient
+  .<span class="fn">getQueryState</span>([<span class="str">'users'</span>])
+<span class="cmt">// → { dataUpdatedAt, status, ... }</span></pre>
+      <div class="flow" style="font-size:10px;margin-top:4px">
+        Cocok di dalam <span class="hi-q">callback / onMutate</span><br>
+        bukan di dalam komponen Vue
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🗑️</span>
+        <span class="card-title">removeQueries</span>
+        <span class="card-badge badge-c">CLIENT</span>
+      </div>
+      <div class="flow" style="font-size:10px">
+        Hapus cache <span class="hi-e">permanen</span><br>
+        Komponen kembali ke isPending = true
+      </div>
+      <pre style="font-size:10px"><span class="cmt">// Hapus spesifik</span>
+queryClient.<span class="fn">removeQueries</span>({
+  <span class="prop">queryKey</span>: [<span class="str">'users'</span>, id],
+  <span class="prop">exact</span>: <span class="kw">true</span>
+})
+<span class="cmt">// Hapus SEMUA (saat logout)</span>
+queryClient.<span class="fn">clear</span>()
+
+<span class="cmt">// Prefetch</span>
+queryClient.<span class="fn">prefetchQuery</span>({
+  <span class="prop">queryKey</span>: [<span class="str">'users'</span>],
+  <span class="prop">queryFn</span>:  fetchUsers
+})</pre>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 6 — PATTERNS
+  ═══════════════════════════════════════════════ -->
+  <div class="section-label" id="patterns">🧩 Patterns</div>
+  <div class="grid-3" style="margin-bottom:14px">
+
+    <!-- Query Key Factory -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🏭</span>
+        <span class="card-title">Query Key Factory</span>
+        <span class="card-badge badge-q">KEYS</span>
+      </div>
+      <pre style="font-size:10px"><span class="cmt">// queries/keys.js — satu sumber kebenaran</span>
+<span class="kw">export const</span> userKeys = {
+  <span class="prop">all</span>:    ()        => [<span class="str">'users'</span>],
+  <span class="prop">lists</span>:  ()        => [...userKeys.<span class="fn">all</span>(), <span class="str">'list'</span>],
+  <span class="prop">list</span>:   (filters) => [...userKeys.<span class="fn">lists</span>(), filters],
+  <span class="prop">detail</span>: (id)      => [...userKeys.<span class="fn">all</span>(), <span class="str">'detail'</span>, id],
+}
+
+<span class="cmt">// Hasilnya:</span>
+userKeys.<span class="fn">all</span>()                <span class="cmt">// ['users']</span>
+userKeys.<span class="fn">list</span>({active:<span class="kw">true</span>}) <span class="cmt">// ['users','list',{active:true}]</span>
+userKeys.<span class="fn">detail</span>(<span class="num">1</span>)           <span class="cmt">// ['users','detail',1]</span></pre>
+    </div>
+
+    <!-- Pagination -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">📄</span>
+        <span class="card-title">Pagination</span>
+        <span class="card-badge badge-q">PAGE</span>
+      </div>
+      <pre style="font-size:10px"><span class="kw">const</span> page = <span class="fn">ref</span>(<span class="num">1</span>)
+
+<span class="kw">const</span> { data, isPlaceholderData } = <span class="fn">useQuery</span>({
+  <span class="prop">queryKey</span>: userKeys.<span class="fn">list</span>({ page }),
+  <span class="prop">queryFn</span>:  () => <span class="fn">fetchUsers</span>({ page: page.<span class="prop">value</span> }),
+
+  <span class="cmt">// Data lama tetap tampil saat ganti halaman</span>
+  <span class="prop">placeholderData</span>: (prev) => prev,
+})
+
+<span class="cmt">// Prefetch halaman berikutnya</span>
+<span class="fn">watch</span>(page, (p) => {
+  queryClient.<span class="fn">prefetchQuery</span>({
+    <span class="prop">queryKey</span>: userKeys.<span class="fn">list</span>({ page: p + <span class="num">1</span> }),
+    <span class="prop">queryFn</span>:  () => <span class="fn">fetchUsers</span>({ page: p + <span class="num">1</span> }),
+  })
+})</pre>
+    </div>
+
+    <!-- Infinite Query -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">♾️</span>
+        <span class="card-title">Infinite Query</span>
+        <span class="card-badge badge-q">INFINITE</span>
+      </div>
+      <pre style="font-size:10px"><span class="kw">const</span> { data, <span class="prop">fetchNextPage</span>, <span class="prop">hasNextPage</span>,
+        <span class="prop">isFetchingNextPage</span> }
+  = <span class="fn">useInfiniteQuery</span>({
+    <span class="prop">queryKey</span>:        [<span class="str">'posts'</span>],
+    <span class="prop">queryFn</span>:         ({ pageParam }) =>
+      <span class="fn">fetchPosts</span>({ cursor: pageParam }),
+    <span class="prop">initialPageParam</span>: <span class="num">0</span>,
+    <span class="prop">getNextPageParam</span>: (lastPage) =>
+      lastPage.<span class="prop">hasMore</span> ? lastPage.<span class="prop">nextCursor</span> : <span class="kw">undefined</span>,
+  })
+
+<span class="cmt">// Flatten semua halaman</span>
+<span class="kw">const</span> posts = <span class="fn">computed</span>(() =>
+  data.<span class="prop">value</span>?.pages.<span class="fn">flatMap</span>(p => p.<span class="prop">data</span>) ?? []
+)</pre>
+    </div>
+
+    <!-- Dependent Query -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🔗</span>
+        <span class="card-title">Dependent Query</span>
+        <span class="card-badge badge-q">CHAIN</span>
+      </div>
+      <pre style="font-size:10px"><span class="cmt">// Query 1 — fetch user dulu</span>
+<span class="kw">const</span> { data: user } = <span class="fn">useQuery</span>({
+  <span class="prop">queryKey</span>: userKeys.<span class="fn">detail</span>(userId),
+  <span class="prop">queryFn</span>:  () => <span class="fn">fetchUser</span>(userId.<span class="prop">value</span>),
+})
+
+<span class="cmt">// Query 2 — tunggu user selesai</span>
+<span class="kw">const</span> { data: posts } = <span class="fn">useQuery</span>({
+  <span class="prop">queryKey</span>: postKeys.<span class="fn">byUser</span>(user.<span class="prop">value</span>?.id),
+  <span class="prop">queryFn</span>:  () => <span class="fn">fetchPostsByUser</span>(user.<span class="prop">value</span>.id),
+  <span class="prop">enabled</span>:  <span class="fn">computed</span>(() => !!user.<span class="prop">value</span>?.id),
+  <span class="cmt">//          ↑ false sampai user ada</span>
+})</pre>
+    </div>
+
+    <!-- Parallel Query -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">⚡</span>
+        <span class="card-title">Parallel Query</span>
+        <span class="card-badge badge-q">PARALLEL</span>
+      </div>
+      <pre style="font-size:10px"><span class="cmt">// Static — langsung tulis beberapa</span>
+<span class="kw">const</span> { data: users }    = <span class="fn">useQuery</span>({ <span class="prop">queryKey</span>: [<span class="str">'users'</span>], ... })
+<span class="kw">const</span> { data: products } = <span class="fn">useQuery</span>({ <span class="prop">queryKey</span>: [<span class="str">'products'</span>], ... })
+<span class="cmt">// ↑ keduanya fetch BERSAMAAN</span>
+
+<span class="cmt">// Dynamic — jumlah tidak tetap</span>
+<span class="kw">const</span> results = <span class="fn">useQueries</span>({
+  <span class="prop">queries</span>: <span class="fn">computed</span>(() =>
+    ids.<span class="prop">value</span>.<span class="fn">map</span>(id => ({
+      <span class="prop">queryKey</span>: userKeys.<span class="fn">detail</span>(id),
+      <span class="prop">queryFn</span>:  () => <span class="fn">fetchUser</span>(id),
+    }))
+  ),
+})</pre>
+    </div>
+
+    <!-- prefetchQuery -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🚀</span>
+        <span class="card-title">prefetchQuery</span>
+        <span class="card-badge badge-q">PREFETCH</span>
+      </div>
+      <pre style="font-size:10px"><span class="cmt">// Hover → prefetch sebelum klik</span>
+<span class="kw">const</span> <span class="fn">prefetchUser</span> = (id) =>
+  queryClient.<span class="fn">prefetchQuery</span>({
+    <span class="prop">queryKey</span>: userKeys.<span class="fn">detail</span>(id),
+    <span class="prop">queryFn</span>:  () => <span class="fn">fetchUser</span>(id),
+  })
+
+<span class="cmt">// Route guard</span>
+router.<span class="fn">beforeEach</span>(<span class="kw">async</span> (to) => {
+  <span class="kw">if</span> (to.<span class="prop">name</span> === <span class="str">'UserDetail'</span>)
+    <span class="kw">await</span> queryClient.<span class="fn">prefetchQuery</span>({ ... })
+})</pre>
+      <div class="flow" style="font-size:10px;margin-top:6px">
+        hover <span class="arrow">→</span> fetch background<br>
+        klik <span class="arrow">→</span> data sudah ada <span class="hi-s">✓ instan</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 7 — OPTIMISTIC UPDATES
+  ═══════════════════════════════════════════════ -->
+  <div class="section-label" id="optimistic">⚡ Optimistic Updates</div>
+  <div class="grid-2" style="margin-bottom:14px">
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">⚡</span>
+        <span class="card-title">Optimistic Update — Pattern Lengkap</span>
+        <span class="card-badge badge-m">MUTATION</span>
+      </div>
+      <pre style="font-size:10px"><span class="kw">const</span> { mutate } = <span class="fn">useMutation</span>({
+  <span class="prop">mutationFn</span>: (data) => <span class="fn">api.put</span>(<span class="str">'/users'</span>, data),
+
+  <span class="prop">onMutate</span>: <span class="kw">async</span> (updated) => {
+    <span class="cmt">// 1. Stop refetch yg bisa overwrite</span>
+    <span class="kw">await</span> queryClient.<span class="fn">cancelQueries</span>({ <span class="prop">queryKey</span>: [<span class="str">'users'</span>] })
+
+    <span class="cmt">// 2. Simpan data lama untuk rollback</span>
+    <span class="kw">const</span> prev = queryClient.<span class="fn">getQueryData</span>([<span class="str">'users'</span>])
+
+    <span class="cmt">// 3. Update cache SEKARANG (UI berubah seketika)</span>
+    queryClient.<span class="fn">setQueryData</span>([<span class="str">'users'</span>], old =>
+      old.<span class="fn">map</span>(u => u.id === updated.id ? { ...u, ...updated } : u)
+    )
+
+    <span class="kw">return</span> { prev } <span class="cmt">// 4. Return context</span>
+  },
+
+  <span class="prop">onError</span>: (err, vars, ctx) => {
+    <span class="cmt">// ❌ Gagal → rollback</span>
+    queryClient.<span class="fn">setQueryData</span>([<span class="str">'users'</span>], ctx.prev)
+  },
+
+  <span class="prop">onSettled</span>: () => {
+    <span class="cmt">// 🏁 Sync final dengan server</span>
+    queryClient.<span class="fn">invalidateQueries</span>({ <span class="prop">queryKey</span>: [<span class="str">'users'</span>] })
+  },
+})</pre>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">📊</span>
+        <span class="card-title">Optimistic vs Normal Flow</span>
+      </div>
+      <div class="flow" style="font-size:10.5px;line-height:2.2">
+        <span class="hi-e">Normal:</span>  klik <span class="arrow">→</span> tunggu server <span class="arrow">→</span> UI update<br>
+        <span class="hi-s">Optimistic:</span> klik <span class="arrow">→</span> UI update <span class="hi-s">LANGSUNG</span> <span class="arrow">→</span> server di bg<br><br>
+
+        <span class="hi-q">onMutate</span>  <span class="arrow">→</span> update cache + return {prev}<br>
+        <span class="hi-s">onSuccess</span>  <span class="arrow">→</span> (opsional) sync data server<br>
+        <span class="hi-e">onError</span>    <span class="arrow">→</span> rollback ke {prev}<br>
+        <span class="hi-w">onSettled</span>  <span class="arrow">→</span> invalidate untuk sync final
+      </div>
+      <div class="flow" style="font-size:10px;margin-top:8px">
+        Cocok untuk: <span class="hi-s">like button</span>, <span class="hi-s">toggle status</span>,<br>
+        <span class="hi-s">edit inline</span>, <span class="hi-s">reorder drag-drop</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 8 — ADVANCED
+  ═══════════════════════════════════════════════ -->
+  <div class="section-label" id="advanced">🌀 Advanced</div>
+  <div class="grid-4" style="margin-bottom:14px">
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🌀</span>
+        <span class="card-title">Suspense Mode</span>
+        <span class="card-badge badge-q">SUSPENSE</span>
+      </div>
+      <pre style="font-size:10px"><span class="cmt">&lt;!-- Parent --&gt;</span>
+<span class="tag">&lt;Suspense&gt;</span>
+  <span class="tag">&lt;UserProfile/&gt;</span>   <span class="cmt">&lt;!-- default --&gt;</span>
+  <span class="kw">&lt;template</span> <span class="prop">#fallback</span><span class="kw">&gt;</span>
+    <span class="tag">&lt;Skeleton/&gt;</span>
+  <span class="kw">&lt;/template&gt;</span>
+<span class="tag">&lt;/Suspense&gt;</span>
+
+<span class="cmt">// Child — tidak perlu v-if isPending</span>
+<span class="kw">const</span> { data } = <span class="fn">useSuspenseQuery</span>({
+  <span class="prop">queryKey</span>: [<span class="str">'user'</span>],
+  <span class="prop">queryFn</span>:  fetchUser,
+})
+<span class="cmt">// data dijamin tidak undefined</span></pre>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🎭</span>
+        <span class="card-title">Placeholder Data</span>
+        <span class="card-badge badge-q">UX</span>
+      </div>
+      <pre style="font-size:10px"><span class="cmt">// Data sementara — tidak masuk cache</span>
+<span class="fn">useQuery</span>({
+  <span class="prop">queryKey</span>: userKeys.<span class="fn">detail</span>(id),
+  <span class="prop">queryFn</span>:  () => <span class="fn">fetchUser</span>(id),
+
+  <span class="cmt">// Ambil dari cache list</span>
+  <span class="prop">placeholderData</span>: () => {
+    <span class="kw">const</span> list = queryClient
+      .<span class="fn">getQueryData</span>(userKeys.<span class="fn">list</span>({}))
+    <span class="kw">return</span> list?.<span class="fn">find</span>(u => u.id === id)
+  }
+})</pre>
+      <div class="flow" style="font-size:9.5px;margin-top:6px">
+        <span class="hi-q">placeholderData</span> → tidak masuk cache<br>
+        <span class="hi-c">initialData</span>     → masuk cache langsung
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🌱</span>
+        <span class="card-title">Initial Data</span>
+        <span class="card-badge badge-q">SSR/CACHE</span>
+      </div>
+      <pre style="font-size:10px"><span class="cmt">// SSR — dari server ke cache</span>
+<span class="fn">useQuery</span>({
+  <span class="prop">queryKey</span>:   userKeys.<span class="fn">detail</span>(id),
+  <span class="prop">queryFn</span>:   () => <span class="fn">fetchUser</span>(id),
+  <span class="prop">initialData</span>: props.<span class="prop">serverUser</span>,
+  <span class="prop">initialDataUpdatedAt</span>:
+    Date.<span class="fn">now</span>() - <span class="num">1000</span> * <span class="num">30</span>,
+})</pre>
+      <table style="margin-top:8px;font-size:10px">
+        <tr><th></th><th>placeholder</th><th>initial</th></tr>
+        <tr><td>Masuk cache</td><td style="color:var(--error)">✗</td><td style="color:var(--success)">✓</td></tr>
+        <tr><td>Trigger fetch</td><td style="color:var(--success)">Selalu</td><td>Jika stale</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🔁</span>
+        <span class="card-title">Background Refetch</span>
+        <span class="card-badge badge-w">SYNC</span>
+      </div>
+      <pre style="font-size:10px"><span class="fn">useQuery</span>({
+  <span class="prop">queryKey</span>: [<span class="str">'data'</span>],
+  <span class="prop">queryFn</span>:  fetch,
+
+  <span class="cmt">// Triggers</span>
+  <span class="prop">refetchOnWindowFocus</span>: <span class="kw">true</span>,
+  <span class="prop">refetchOnReconnect</span>:   <span class="kw">true</span>,
+  <span class="prop">refetchOnMount</span>:       <span class="kw">true</span>,
+
+  <span class="cmt">// Polling</span>
+  <span class="prop">refetchInterval</span>:      <span class="num">30000</span>,
+
+  <span class="cmt">// Retry</span>
+  <span class="prop">retry</span>:      <span class="num">2</span>,
+  <span class="prop">retryDelay</span>: attempt =>
+    <span class="fn">Math.min</span>(<span class="num">1000</span> * <span class="num">2</span> ** attempt, <span class="num">30000</span>),
+})</pre>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 9 — PRODUCTION
+  ═══════════════════════════════════════════════ -->
+  <div class="section-label" id="production">🏗️ Production Architecture</div>
+  <div class="grid-3" style="margin-bottom:14px">
+
+    <!-- Auth -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🔐</span>
+        <span class="card-title">Authentication</span>
+        <span class="card-badge badge-s">AUTH</span>
+      </div>
+      <pre style="font-size:10px"><span class="cmt">// Axios interceptor — inject token</span>
+api.interceptors.<span class="prop">request</span>.<span class="fn">use</span>(config => {
+  <span class="kw">const</span> token = localStorage.<span class="fn">getItem</span>(<span class="str">'token'</span>)
+  <span class="kw">if</span> (token)
+    config.headers.<span class="prop">Authorization</span> = <span class="str">`Bearer <span class="tag">${token}</span>`</span>
+  <span class="kw">return</span> config
+})
+
+<span class="cmt">// Logout — bersihkan semua cache sensitif</span>
+<span class="kw">const</span> <span class="fn">logout</span> = () => {
+  localStorage.<span class="fn">removeItem</span>(<span class="str">'token'</span>)
+  queryClient.<span class="fn">clear</span>()   <span class="cmt">// ← hapus semua</span>
+  router.<span class="fn">push</span>(<span class="str">'/login'</span>)
+}
+
+<span class="cmt">// Query auth — hanya aktif kalau ada token</span>
+<span class="fn">useQuery</span>({
+  <span class="prop">queryKey</span>: [<span class="str">'profile'</span>],
+  <span class="prop">queryFn</span>:  () => api.<span class="fn">get</span>(<span class="str">'/me'</span>),
+  <span class="prop">enabled</span>:  <span class="fn">computed</span>(() =>
+    !!localStorage.<span class="fn">getItem</span>(<span class="str">'token'</span>)
+  ),
+  <span class="prop">retry</span>: (n, err) =>
+    err.response?.status === <span class="num">401</span> ? <span class="kw">false</span> : n < <span class="num">2</span>,
+})</pre>
+    </div>
+
+    <!-- SSR Nuxt -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🖥️</span>
+        <span class="card-title">SSR + Hydration (Nuxt 3)</span>
+        <span class="card-badge badge-s">SSR</span>
+      </div>
+      <pre style="font-size:10px"><span class="cmt">// plugins/vue-query.ts</span>
+<span class="kw">const</span> vueQueryState = <span class="fn">useState</span>(<span class="str">'vue-query'</span>)
+<span class="kw">const</span> queryClient   = <span class="kw">new</span> <span class="fn">QueryClient</span>()
+
+<span class="kw">if</span> (import.meta.<span class="prop">server</span>) {
+  nuxt.hooks.<span class="fn">hook</span>(<span class="str">'app:rendered'</span>, () => {
+    <span class="cmt">// Serialize cache → kirim ke client</span>
+    vueQueryState.<span class="prop">value</span> = <span class="fn">dehydrate</span>(queryClient)
+  })
+}
+<span class="kw">if</span> (import.meta.<span class="prop">client</span>) {
+  <span class="cmt">// Restore cache dari server</span>
+  <span class="fn">hydrate</span>(queryClient, vueQueryState.<span class="prop">value</span>)
+}
+
+<span class="cmt">// Page — fetch di server</span>
+<span class="kw">await</span> <span class="fn">useAsyncData</span>(<span class="str">'users'</span>, () =>
+  queryClient.<span class="fn">prefetchQuery</span>({
+    <span class="prop">queryKey</span>: [<span class="str">'users'</span>],
+    <span class="prop">queryFn</span>:  () => <span class="fn">$fetch</span>(<span class="str">'/api/users'</span>),
+  })
+)
+<span class="cmt">// Client: data sudah ada → tidak refetch ✅</span></pre>
+    </div>
+
+    <!-- Error Boundary + Folder Structure -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🚧</span>
+        <span class="card-title">Error Handling & Folder Structure</span>
+        <span class="card-badge badge-s">ARCH</span>
+      </div>
+      <pre style="font-size:10px"><span class="cmt">// Global error handler</span>
+<span class="kw">new</span> <span class="fn">QueryClient</span>({
+  <span class="prop">queryCache</span>: <span class="kw">new</span> <span class="fn">QueryCache</span>({
+    <span class="prop">onError</span>: (error, query) => {
+      Sentry.<span class="fn">captureException</span>(error)
+      <span class="kw">if</span> (error.response?.status === <span class="num">401</span>)
+        router.<span class="fn">push</span>(<span class="str">'/login'</span>)
+    }
+  })
+})</pre>
+      <div class="flow" style="font-size:9.5px;margin-top:8px;line-height:1.9">
+        <span class="hi-q">src/</span><br>
+        ├── <span class="hi-c">lib/</span>           axios.js · query-client.js<br>
+        ├── <span class="hi-q">queries/</span>      keys.js · user.queries.js<br>
+        ├── <span class="hi-m">mutations/</span>    user.mutations.js<br>
+        └── <span class="hi-s">components/</span>   ErrorBoundary.vue
+      </div>
+      <div class="flow" style="font-size:9.5px;margin-top:6px">
+        Retry layers:<br>
+        1. <span class="hi-q">retry/retryDelay</span>     → network blip<br>
+        2. <span class="hi-c">QueryCache.onError</span>   → global log<br>
+        3. <span class="hi-m">onError mutation</span>     → rollback<br>
+        4. <span class="hi-s">ErrorBoundary+Suspense</span> → UI fallback
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       QUICK REFERENCE TABLE
+  ═══════════════════════════════════════════════ -->
+  <div class="section-label">📋 Quick Reference</div>
+  <div class="grid-2" style="margin-bottom:14px">
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">📋</span>
+        <span class="card-title">Method Comparison</span>
+      </div>
+      <table>
+        <tr><th>Method</th><th>Cache</th><th>Network</th><th>Komponen</th></tr>
+        <tr>
+          <td>invalidateQueries</td>
+          <td style="color:var(--success)">Tetap ada</td>
+          <td style="color:var(--success)">Refetch ✓</td>
+          <td>Data lama tampil</td>
+        </tr>
+        <tr>
+          <td>setQueryData</td>
+          <td style="color:var(--warn)">Update</td>
+          <td style="color:var(--error)">Tidak ✗</td>
+          <td>Langsung update</td>
+        </tr>
+        <tr>
+          <td>getQueryData</td>
+          <td style="color:var(--neutral)">Baca saja</td>
+          <td style="color:var(--error)">Tidak ✗</td>
+          <td>Tidak berpengaruh</td>
+        </tr>
+        <tr>
+          <td>removeQueries</td>
+          <td style="color:var(--error)">Hapus</td>
+          <td style="color:var(--error)">Tidak ✗</td>
+          <td>isPending = true</td>
+        </tr>
+        <tr>
+          <td>prefetchQuery</td>
+          <td style="color:var(--success)">Isi cache</td>
+          <td style="color:var(--success)">Fetch ✓</td>
+          <td>Tidak berpengaruh</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🎯</span>
+        <span class="card-title">Kapan Pakai Apa</span>
+      </div>
+      <table>
+        <tr><th>Situasi</th><th>Solusi</th></tr>
+        <tr><td>Baca data dari API</td><td style="color:var(--query)">useQuery</td></tr>
+        <tr><td>POST / PUT / DELETE</td><td style="color:var(--mutation)">useMutation</td></tr>
+        <tr><td>Setelah mutation sukses</td><td style="color:var(--cache)">invalidateQueries</td></tr>
+        <tr><td>Server return data baru</td><td style="color:var(--cache)">setQueryData</td></tr>
+        <tr><td>UI terasa instan</td><td style="color:var(--warn)">Optimistic Update</td></tr>
+        <tr><td>Halaman terasa instan</td><td style="color:var(--success)">prefetchQuery</td></tr>
+        <tr><td>Load More / Scroll</td><td style="color:var(--query)">useInfiniteQuery</td></tr>
+        <tr><td>Query bergantung lain</td><td style="color:var(--query)">enabled: computed()</td></tr>
+        <tr><td>Banyak query paralel</td><td style="color:var(--query)">useQueries</td></tr>
+        <tr><td>Logout</td><td style="color:var(--error)">queryClient.clear()</td></tr>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- FLOW DIAGRAM -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-header">
+      <span class="card-icon">🗺️</span>
+      <span class="card-title">Full Architecture Flow</span>
+    </div>
+    <div class="flow" style="font-size:11px;line-height:2.2;padding:16px 20px">
+      <span class="hi-c">QueryClient</span> (singleton — otak sentral, memegang semua cache)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;│<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;├── <span class="hi-q">useQuery(queryKey, queryFn)</span>  →  baca · cache · sync · retry · loading state otomatis<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑ reactive: queryKey berubah → refetch otomatis<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑ staleTime: berapa lama FRESH → tidak refetch<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑ gcTime: berapa lama cache hidup setelah unmount<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;│<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;├── <span class="hi-m">useMutation(mutationFn)</span>  →  tulis · onMutate · onSuccess · onError · onSettled<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓ onSuccess → invalidateQueries / setQueryData<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓ onMutate  → optimistic update + rollback context<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;│<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;├── <span class="hi-c">invalidateQueries</span>  →  stale + refetch aktif &nbsp;|&nbsp; <span class="hi-c">setQueryData</span>  →  update langsung tanpa fetch<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;<span class="hi-c">getQueryData</span>       →  baca sinkron &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp; <span class="hi-c">removeQueries</span>  →  hapus cache permanen<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;│<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;└── Patterns: <span class="hi-q">Pagination</span> · <span class="hi-q">InfiniteQuery</span> · <span class="hi-q">DependentQuery</span> · <span class="hi-q">ParallelQuery</span> · <span class="hi-s">OptimisticUpdate</span>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<div class="footer">
+  TanStack Vue Query Cheatsheet · Dibuat dengan ❤️ · v5 · @tanstack/vue-query
+</div>
+
+</body>
+</html>
