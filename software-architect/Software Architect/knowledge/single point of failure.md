@@ -1,0 +1,1 @@
+(SPOF): Jika runtuhnya sistem utama disebabkan oleh rusaknya satu komponen vital yang tidak memiliki cadangan.
