@@ -1,8 +1,24 @@
-1\. Binary aplikasi:
 
-- Masih bisa diketahui: library eksternal yang digunakan (dynamic linking).
-- Sudah hilang: informasi simbol yang dihapus oleh proses stripping, misalnya nama fungsi lokal yang tidak dipertahankan.
+1. Siklus CPU dan Register Instruksi
 
-2\. Nama variabel lokal: Umumnya hilang saat compile, kecuali informasi debug dipertahankan.
+Tiga tahap siklus CPU (Instruction Cycle):
+1. Fetch (Mengambil instruksi dari memori)
+2. Decode (Menerjemahkan instruksi)
+3. Execute  (Mengeksekusi instruksi)
 
-3\. String C `"Hi"` dalam hex per byte: `48 69 00` (termasuk null terminator `00`).
+
+Register penunjuk instruksi: Program Counter (PC) atau Instruction Pointer (IP/RIP).
+
+
+
+2. Nilai `rax` dalam Desimal
+
+Nilai `rax` adalah 16.
+
+Penjelasan: Arsitektur x86 menggunakan format *Little Endian*, di mana byte dengan nilai terendah disimpan pada alamat memori terendah. Data `10 00 00 00 00 00 00 00` bila disusun kembali menjadi bilangan 64-bit bernilai heksadesimal `0x0000000000000010`, yang jika dikonversi ke desimal bernilai 16.
+
+
+
+3. Perbedaan Register dan Memory
+
+Register itu tempat penyimpanan internal CPU yang sangat cepat dan diakses langsung berdasarkan nama, sedangkan memory  penyimpanan eksternal CPU yang lebih besar di mana setiap data harus diakses melalui suatu alamat tertentu.

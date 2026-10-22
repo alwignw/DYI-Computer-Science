@@ -1,0 +1,1 @@
+Hasil build yang di-deploy ke server, misalnya `.jar`, `.war`, atau folder aplikasi. Pada [[Monolith]], seluruh fitur dikemas dalam satu artifact, sehingga perubahan kecil pun men-deploy ulang semuanya.

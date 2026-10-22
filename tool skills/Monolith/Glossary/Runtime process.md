@@ -1,0 +1,1 @@
+Program yang sedang berjalan di sistem operasi dengan memorinya sendiri. Pada [[Monolith]], modul saling memanggil lewat function call dalam proses yang sama, bukan lewat jaringan. Satu VM bisa menjalankan banyak proses, jadi "satu VM" tidak sama dengan "satu proses".

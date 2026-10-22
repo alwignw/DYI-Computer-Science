@@ -1,6 +1,6 @@
 # PROGRES Belajar Reverse Engineering
 
-> Posisi saat ini: **Konsep 2.1 selesai – siap ke Konsep 2.2: CPU, register, dan memory**
+> Posisi saat ini: **Konsep 2.2 selesai. Berikutnya: 2.3 Stack dan heap (belum dimulai).**
 
 ## Roadmap
 
@@ -12,7 +12,7 @@
 
 ### Tahap 2 – Cara program berjalan
 - [x] 2.1 Dari source code ke binary (compile, link)
-- [ ] 2.2 CPU, register, dan memory
+- [x] 2.2 CPU, register, dan memory
 - [ ] 2.3 Stack dan heap
 - [ ] 2.4 Format executable (Mach-O, ELF, PE)
 
@@ -47,6 +47,7 @@
 - **1.3** Soal 1 tertukar (little-endian ditulis `AA BB CC DD`, seharusnya `DD CC BB AA`). Soal 2 benar (42, balik byte lalu bobot). Soal 3 benar (0x1F = 31). Detail: [[Latihan 1.3 - Endianness]]
 - **1.4** Soal 1 benar (REVERSE). Soal 2 salah (`"Go"` ditulis `0x424342`, seharusnya `47 6F 00`; belum bisa mencari kode ASCII dari huruf). Soal 3 benar (`z`, `5A`, 1 byte). Soal 4 benar, label little/big sudah tidak tertukar (catatan: tulis per byte, bukan `0x...`). Detail: [[Latihan 1.4 - Encoding teks]]
 - **2.1** Semua benar: library eksternal masih terlihat, simbol/nama fungsi lokal hilang karena strip, nama variabel lokal hilang saat compile. Ulangan `"Hi"` = `48 69 00` benar (kelemahan ASCII sudah teratasi). Detail: [[Latihan 2.1 - Dari source code ke binary]]
+- **2.2** Semua benar: siklus Fetch–Decode–Execute + `rip`/`pc`; `rax` = 16 (little-endian dibalik dengan benar, konversi hex→desimal sudah tepat); beda register vs memory dengan kata "alamat". Detail: [[Latihan 2.2 - CPU, register, dan memory]]
 
 ## Topik berikutnya
-2.2 CPU, register, dan memory — memperkenalkan tempat instruksi dan data berada saat program jalan (dasar untuk assembly di Tahap 3).
+2.3 Stack dan heap (butuh dasar 2.2: register `rsp`, memory, alamat).
