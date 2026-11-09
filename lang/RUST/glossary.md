@@ -9,3 +9,34 @@ Multiparadigma = Bahasa pemrograman yang mendukung lebih dari satu gaya (paradig
 High-Level Language = Bahasa pemrograman yang sangat dekat dengan bahasa manusia (Inggris) dan jauh dari bahasa mesin (0 dan 1). Kode-nya mudah dibaca, ditulis, dan dipahami oleh manusia.
 
 Low-Level Language = Bahasa pemrograman yang sangat dekat dengan bahasa mesin (hardware) dan jauh dari bahasa manusia. 
+
+augmented assigment = 
+
+Constant propagation = 
+
+constant folding = 
+
+Use after free =
+
+Dangling references =
+
+Double free =
+
+Data races dalam safe Rust =
+
+Rule of thumb = (atau dalam bahasa Indonesia sering disebut aturan praktis) adalah pedoman atau prinsip umum yang didasarkan pada pengalaman dan praktik nyata, bukan pada teori ilmiah atau perhitungan yang rumit.
+
+variable binding = 
+
+lexical scope =
+
+Type Inference =
+
+Single precision = 
+
+Double precision =
+
+Operator precedence =  (prioritas operator) adalah aturan dalam bahasa pemrograman yang menentukan urutan suatu operasi dievaluasi ketika sebuah ekspresi memiliki lebih dari satu operator.
+Operator dengan prioritas lebih tinggi akan dikerjakan terlebih dahulu dibandingkan operator yang memiliki prioritas lebih rendah
+
+truncation toward zero = 

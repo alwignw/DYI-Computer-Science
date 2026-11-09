@@ -25,5 +25,5 @@ https://www.youtube.com/watch?v=3DIpUrPnQRQ
 -unit test (+) 
 -variable (+) 
 -comment (+) 
--data types (-) 
--numeric operator - ?
+-data types (+) 
+-numeric operator - 

@@ -1,1 +1,0 @@
-https://binus.ac.id/bandung/2023/10/flip-flop-dan-jenis-jenisnya/

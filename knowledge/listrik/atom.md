@@ -1,1 +1,0 @@
-https://www.gramedia.com/literasi/perkembangan-teori-atom/
