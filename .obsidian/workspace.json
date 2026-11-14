@@ -4,17 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "c099c23c4f6d68f5",
+        "id": "90f0b60f7137fc06",
         "type": "tabs",
         "children": [
           {
-            "id": "62aac9f84b83c911",
+            "id": "47013dccc091aa32",
             "type": "leaf",
             "state": {
-              "type": "graph",
+              "type": "empty",
               "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Graph view"
+              "icon": "lucide-file",
+              "title": "New tab"
             }
           }
         ]
@@ -184,8 +184,9 @@
       "bases:Create new base": false
     }
   },
-  "active": "62aac9f84b83c911",
+  "active": "47013dccc091aa32",
   "lastOpenFiles": [
+    "Untitled.canvas",
     "tool skills/Backup/20-Konsep/Backup.md",
     "tool skills/Backup/Glossary/Data Historian.md",
     "tool skills/Backup/Glossary/RAID.md",
